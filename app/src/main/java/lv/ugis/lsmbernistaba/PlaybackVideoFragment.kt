@@ -14,40 +14,68 @@
 
 package lv.ugis.lsmbernistaba
 
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import androidx.leanback.app.VideoSupportFragment
-import androidx.leanback.app.VideoSupportFragmentGlueHost
-import androidx.leanback.media.MediaPlayerAdapter
-import androidx.leanback.media.PlaybackTransportControlGlue
-import androidx.leanback.widget.PlaybackControlsRow
+import org.jsoup.Jsoup
+import org.jsoup.select.Elements
+import java.io.IOException
 
 /** Handles video playback with media controls. */
 class PlaybackVideoFragment : VideoSupportFragment() {
+//    private lateinit var mTransportControlGlue: PlaybackTransportControlGlue<MediaPlayerAdapter>
 
-    private lateinit var mTransportControlGlue: PlaybackTransportControlGlue<MediaPlayerAdapter>
+    private var mediaPlayer: MediaPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val (_, title, description, _, _, videoUrl) =
-            activity?.intent?.getSerializableExtra(DetailsActivity.MOVIE) as Movie
+        val item = activity?.intent?.getSerializableExtra(PlaybackActivity.MOVIE) as AudioItem
 
-        val glueHost = VideoSupportFragmentGlueHost(this@PlaybackVideoFragment)
-        val playerAdapter = MediaPlayerAdapter(activity)
-        playerAdapter.setRepeatAction(PlaybackControlsRow.RepeatAction.INDEX_NONE)
+        object : Thread() {
+            override fun run() {
+                try {
+                    // Connect to the web site
+                    val mBlogDocument = Jsoup.connect(item.url).get()
+                    // Using Elements to get the Meta data
+                    val mElementDataSize: Elements = mBlogDocument
+                        .select("source[type=application/x-mpegURL]")
 
-        mTransportControlGlue = PlaybackTransportControlGlue(getActivity(), playerAdapter)
-        mTransportControlGlue.host = glueHost
-        mTransportControlGlue.title = title
-        mTransportControlGlue.subtitle = description
-        mTransportControlGlue.playWhenPrepared()
+                    val element = mElementDataSize.first()
+                    val urlStr: String = element.attr("src")
+                    val url = Uri.parse(urlStr)
+                    playUrl(url)
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+        }.start()
 
-        playerAdapter.setDataSource(Uri.parse(videoUrl))
+//        val glueHost = VideoSupportFragmentGlueHost(this@PlaybackVideoFragment)
+//        val playerAdapter = MediaPlayerAdapter(activity)
+//        playerAdapter.setRepeatAction(PlaybackControlsRow.RepeatAction.INDEX_NONE)
+//
+//        mTransportControlGlue = PlaybackTransportControlGlue(getActivity(), playerAdapter)
+//        mTransportControlGlue.host = glueHost
+//        mTransportControlGlue.title = title
+//        mTransportControlGlue.subtitle = description
+//        mTransportControlGlue.playWhenPrepared()
+//
+//        playerAdapter.setDataSource(Uri.parse(videoUrl))
+    }
+
+    private fun playUrl(url: Uri) {
+        mediaPlayer?.stop()
+
+        mediaPlayer = MediaPlayer.create(activity, url)
+        mediaPlayer?.start() // no need to call prepare(); create() does that for you
     }
 
     override fun onPause() {
         super.onPause()
-        mTransportControlGlue.pause()
+        
+        mediaPlayer?.stop()
+//        mTransportControlGlue.pause()
     }
 }

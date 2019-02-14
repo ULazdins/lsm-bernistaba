@@ -17,7 +17,6 @@ package lv.ugis.lsmbernistaba
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.media.MediaPlayer
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.util.DisplayMetrics
@@ -47,6 +46,7 @@ class MainFragment : BrowseFragment() {
     private lateinit var mMetrics: DisplayMetrics
     private var mBackgroundTimer: Timer? = null
     private var mBackgroundUri: String? = null
+    private var mediaPlayer: MediaPlayer? = null
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         Log.i(TAG, "onCreate")
@@ -80,12 +80,12 @@ class MainFragment : BrowseFragment() {
 
 
 
-                    val mainHandler = Handler(activity.getMainLooper());
+                    val mainHandler = Handler(activity.mainLooper)
                     val myRunnable = Runnable {
 
                         loadRows(items)
                     }
-                    mainHandler.post(myRunnable);
+                    mainHandler.post(myRunnable)
 
                 } catch (e: IOException) {
                     e.printStackTrace()
@@ -154,35 +154,14 @@ class MainFragment : BrowseFragment() {
             row: Row
         ) {
             if (item is AudioItem) {
-                object : Thread() {
-                    override fun run() {
-                        try {
-                            // Connect to the web site
-                            val mBlogDocument = Jsoup.connect(item.url).get()
-                            // Using Elements to get the Meta data
-                            val mElementDataSize: Elements = mBlogDocument
-                                .select("source[type=application/x-mpegURL]")
-
-                            val element = mElementDataSize.first()
-                            val urlStr: String = element.attr("src")
-                            val url = Uri.parse(urlStr)
-
-                            val mediaPlayer: MediaPlayer? = MediaPlayer.create(activity, url)
-                            mediaPlayer?.start() // no need to call prepare(); create() does that for you
-                        } catch (e: IOException) {
-                            e.printStackTrace()
-                        }
-                    }
-                }.start()
-            } else if (item is Movie) {
-                Log.d(TAG, "Item: " + item.toString())
-                val intent = Intent(activity, DetailsActivity::class.java)
-                intent.putExtra(DetailsActivity.MOVIE, item)
+                Log.d(TAG, "Item: $item")
+                val intent = Intent(activity, PlaybackActivity::class.java)
+                intent.putExtra(PlaybackActivity.MOVIE, item)
 
                 val bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
                     activity,
                     (itemViewHolder.view as ImageCardView).mainImageView,
-                    DetailsActivity.SHARED_ELEMENT_NAME
+                    PlaybackActivity.SHARED_ELEMENT_NAME
                 )
                     .toBundle()
                 activity.startActivity(intent, bundle)
@@ -195,8 +174,8 @@ class MainFragment : BrowseFragment() {
             itemViewHolder: Presenter.ViewHolder?, item: Any?,
             rowViewHolder: RowPresenter.ViewHolder, row: Row
         ) {
-            if (item is Movie) {
-                mBackgroundUri = item.backgroundImageUrl
+            if (item is AudioItem) {
+                mBackgroundUri = item.imageUrl
                 startBackgroundTimer()
             }
         }
@@ -235,8 +214,8 @@ class MainFragment : BrowseFragment() {
     }
 
     companion object {
-        private val TAG = "MainFragment"
+        private const val TAG = "MainFragment"
 
-        private val BACKGROUND_UPDATE_DELAY = 300
+        private const val BACKGROUND_UPDATE_DELAY = 300
     }
 }

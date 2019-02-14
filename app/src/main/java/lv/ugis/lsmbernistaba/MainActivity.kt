@@ -16,16 +16,18 @@ package lv.ugis.lsmbernistaba
 
 import android.app.Activity
 import android.os.Bundle
-import org.jsoup.Jsoup
-import org.jsoup.select.Elements
-import java.io.IOException
+import java.io.Serializable
 
 
 data class AudioItem (
     var url: String,
     var imageUrl: String,
     var title: String
-)
+): Serializable {
+    companion object {
+        internal const val serialVersionUID = 727566175075960653L
+    }
+}
 
 class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {

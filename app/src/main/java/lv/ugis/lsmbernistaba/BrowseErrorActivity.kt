@@ -77,8 +77,8 @@ class BrowseErrorActivity : Activity() {
     }
 
     companion object {
-        private val TIMER_DELAY = 3000L
-        private val SPINNER_WIDTH = 100
-        private val SPINNER_HEIGHT = 100
+        private const val TIMER_DELAY = 3000L
+        private const val SPINNER_WIDTH = 100
+        private const val SPINNER_HEIGHT = 100
     }
 }
