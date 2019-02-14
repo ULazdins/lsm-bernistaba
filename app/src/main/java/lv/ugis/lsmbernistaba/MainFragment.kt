@@ -16,16 +16,14 @@ package lv.ugis.lsmbernistaba
 
 import android.content.Intent
 import android.graphics.drawable.Drawable
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.util.DisplayMetrics
 import android.util.Log
 import android.widget.Toast
-import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import androidx.leanback.app.BackgroundManager
-import androidx.leanback.app.BrowseFragment
+import androidx.leanback.app.BrowseSupportFragment
 import androidx.leanback.widget.*
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.GlideDrawable
@@ -39,14 +37,13 @@ import java.util.*
 /**
  * Loads a grid of cards with movies to browse.
  */
-class MainFragment : BrowseFragment() {
+class MainFragment : BrowseSupportFragment() {
     private val mHandler = Handler()
     private lateinit var mBackgroundManager: BackgroundManager
     private var mDefaultBackground: Drawable? = null
     private lateinit var mMetrics: DisplayMetrics
     private var mBackgroundTimer: Timer? = null
     private var mBackgroundUri: String? = null
-    private var mediaPlayer: MediaPlayer? = null
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         Log.i(TAG, "onCreate")
@@ -77,10 +74,8 @@ class MainFragment : BrowseFragment() {
 
                         AudioItem(url, imageUrl, title)
                     }
-
-
-
-                    val mainHandler = Handler(activity.mainLooper)
+                    
+                    val mainHandler = Handler(context!!.mainLooper)
                     val myRunnable = Runnable {
 
                         loadRows(items)
@@ -105,22 +100,22 @@ class MainFragment : BrowseFragment() {
 
     private fun prepareBackgroundManager() {
         mBackgroundManager = BackgroundManager.getInstance(activity)
-        mBackgroundManager.attach(activity.window)
-        mDefaultBackground = ContextCompat.getDrawable(activity, R.drawable.default_background)
+        mBackgroundManager.attach(activity!!.window)
+        mDefaultBackground = ContextCompat.getDrawable(context!!, R.drawable.default_background)
         mMetrics = DisplayMetrics()
-        activity.windowManager.defaultDisplay.getMetrics(mMetrics)
+        activity!!.windowManager.defaultDisplay.getMetrics(mMetrics)
     }
 
     private fun setupUIElements() {
         title = getString(R.string.browse_title)
         // over title
-        headersState = BrowseFragment.HEADERS_ENABLED
+        headersState = BrowseSupportFragment.HEADERS_ENABLED
         isHeadersTransitionOnBackEnabled = true
 
         // set fastLane (or headers) background color
-        brandColor = ContextCompat.getColor(activity, R.color.fastlane_background)
+        brandColor = ContextCompat.getColor(context!!, R.color.fastlane_background)
         // set search icon color
-        searchAffordanceColor = ContextCompat.getColor(activity, R.color.search_opaque)
+        searchAffordanceColor = ContextCompat.getColor(context!!, R.color.search_opaque)
     }
 
     private fun loadRows(list: List<AudioItem>) {
@@ -158,13 +153,14 @@ class MainFragment : BrowseFragment() {
                 val intent = Intent(activity, PlaybackActivity::class.java)
                 intent.putExtra(PlaybackActivity.MOVIE, item)
 
-                val bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                    activity,
-                    (itemViewHolder.view as ImageCardView).mainImageView,
-                    PlaybackActivity.SHARED_ELEMENT_NAME
-                )
-                    .toBundle()
-                activity.startActivity(intent, bundle)
+//                val bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
+//                    context!!,
+//                    (itemViewHolder.view as ImageCardView).mainImageView,
+//                    PlaybackActivity.SHARED_ELEMENT_NAME
+//                )
+//                    .toBundle()
+//                activity!!.startActivity(intent, bundle)
+                activity!!.startActivity(intent)
             }
         }
     }

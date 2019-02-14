@@ -22,6 +22,7 @@ import org.jsoup.Jsoup
 import org.jsoup.select.Elements
 import java.io.IOException
 
+
 /** Handles video playback with media controls. */
 class PlaybackVideoFragment : VideoSupportFragment() {
 //    private lateinit var mTransportControlGlue: PlaybackTransportControlGlue<MediaPlayerAdapter>

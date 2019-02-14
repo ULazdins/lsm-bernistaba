@@ -14,8 +14,8 @@
 
 package lv.ugis.lsmbernistaba
 
-import android.app.Activity
 import android.os.Bundle
+import androidx.fragment.app.FragmentActivity
 import java.io.Serializable
 
 
@@ -29,7 +29,7 @@ data class AudioItem (
     }
 }
 
-class MainActivity : Activity() {
+class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
