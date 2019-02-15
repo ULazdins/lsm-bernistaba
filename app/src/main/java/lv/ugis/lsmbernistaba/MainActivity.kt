@@ -16,18 +16,7 @@ package lv.ugis.lsmbernistaba
 
 import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
-import java.io.Serializable
 
-
-data class AudioItem (
-    var url: String,
-    var imageUrl: String,
-    var title: String
-): Serializable {
-    companion object {
-        internal const val serialVersionUID = 727566175075960653L
-    }
-}
 
 class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

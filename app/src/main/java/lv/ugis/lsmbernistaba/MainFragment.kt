@@ -29,10 +29,10 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.GlideDrawable
 import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.SimpleTarget
-import org.jsoup.Jsoup
-import org.jsoup.select.Elements
-import java.io.IOException
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.Consumer
 import java.util.*
+
 
 /**
  * Loads a grid of cards with movies to browse.
@@ -44,6 +44,10 @@ class MainFragment : BrowseSupportFragment() {
     private lateinit var mMetrics: DisplayMetrics
     private var mBackgroundTimer: Timer? = null
     private var mBackgroundUri: String? = null
+    private var apiClient = ApiClient()
+    val rowsAdapter = ArrayObjectAdapter(ListRowPresenter())
+
+    val cardPresenter = CardPresenter()
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         Log.i(TAG, "onCreate")
@@ -53,41 +57,27 @@ class MainFragment : BrowseSupportFragment() {
 
         setupUIElements()
 
+        adapter = rowsAdapter
 
-        object : Thread() {
-            override fun run() {
-                try {
-                    // Connect to the web site
-                    val mBlogDocument = Jsoup.connect("https://bernistaba.lsm.lv/klausies/3165-merijas-popinsas-dzimsanas-diena").get()
-                    // Using Elements to get the Meta data
-                    val mElementDataSize: Elements = mBlogDocument.select("a[class=audio-item]")
-                    val items: List<AudioItem> = mElementDataSize.map {
-                        val url: String = it.attr("href")
-                        val imageUrl: String = it
-                            .select("div[class=item-thumb]")
-                            .attr("style")
-                            .removePrefix("background-image:url(")
-                            .removeSuffix(")")
-                        val title: String = it
-                            .select("div[class=item-title]")
-                            .text()
+        apiClient.loadAudioCategories()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(Consumer {
+                it.forEach {
+                    val listRowAdapter = ArrayObjectAdapter(cardPresenter)
+                    val header = HeaderItem(0, it.title)
+                    rowsAdapter.add(ListRow(header, listRowAdapter))
 
-                        AudioItem(url, imageUrl, title)
-                    }
-                    
-                    val mainHandler = Handler(context!!.mainLooper)
-                    val myRunnable = Runnable {
-
-                        loadRows(items)
-                    }
-                    mainHandler.post(myRunnable)
-
-                } catch (e: IOException) {
-                    e.printStackTrace()
+                    apiClient.loadAudioItemsForCategory(it.url)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(Consumer {
+                            listRowAdapter.addAll(0, it)
+                        }, Consumer {
+                            Toast.makeText(context, it.localizedMessage, Toast.LENGTH_LONG).show()
+                        })
                 }
-            }
-        }.start()
-
+            }, Consumer {
+                Toast.makeText(context, it.localizedMessage, Toast.LENGTH_LONG).show()
+            })
 
         setupEventListeners()
     }
@@ -118,19 +108,6 @@ class MainFragment : BrowseSupportFragment() {
         searchAffordanceColor = ContextCompat.getColor(context!!, R.color.search_opaque)
     }
 
-    private fun loadRows(list: List<AudioItem>) {
-        val rowsAdapter = ArrayObjectAdapter(ListRowPresenter())
-        val cardPresenter = CardPresenter()
-
-
-        val listRowAdapter = ArrayObjectAdapter(cardPresenter)
-        list.forEach { listRowAdapter.add(it) }
-        val header = HeaderItem(0, "Audio")
-        rowsAdapter.add(ListRow(header, listRowAdapter))
-
-        adapter = rowsAdapter
-    }
-
     private fun setupEventListeners() {
         setOnSearchClickedListener {
             Toast.makeText(activity, "Implement your own in-app search", Toast.LENGTH_LONG)
@@ -152,14 +129,6 @@ class MainFragment : BrowseSupportFragment() {
                 Log.d(TAG, "Item: $item")
                 val intent = Intent(activity, PlaybackActivity::class.java)
                 intent.putExtra(PlaybackActivity.MOVIE, item)
-
-//                val bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
-//                    context!!,
-//                    (itemViewHolder.view as ImageCardView).mainImageView,
-//                    PlaybackActivity.SHARED_ELEMENT_NAME
-//                )
-//                    .toBundle()
-//                activity!!.startActivity(intent, bundle)
                 activity!!.startActivity(intent)
             }
         }
@@ -203,7 +172,6 @@ class MainFragment : BrowseSupportFragment() {
     }
 
     private inner class UpdateBackgroundTask : TimerTask() {
-
         override fun run() {
             mHandler.post { updateBackground(mBackgroundUri) }
         }
