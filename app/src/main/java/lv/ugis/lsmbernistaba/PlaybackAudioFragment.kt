@@ -78,7 +78,10 @@ class PlaybackAudioFragment: PlaybackSupportFragment() {
                         .select("source[type=application/x-mpegURL]")
 
                     val element = mElementDataSize.first()
-                    val urlStr: String = element.attr("src")
+                    var urlStr: String = element.attr("src")
+
+                    urlStr = urlStr.replace("mp3:", "").replace(".mp3", ".m4a")
+
                     val url = Uri.parse(urlStr)
 
                     playerGlue.getPlayerAdapter().setDataSource(url)
