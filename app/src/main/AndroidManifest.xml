@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools"
-          package="lv.ugis.lsmbernistaba">
+          package="lv.makit.lsmbernistaba">
     <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-feature
@@ -12,17 +12,18 @@
             android:required="true"/>
 
     <application
-            android:allowBackup="true"
+            android:allowBackup="false"
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
             android:supportsRtl="true"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme"
+            tools:ignore="GoogleAppIndexingWarning">
         <activity
                 android:name=".MainActivity"
-                android:banner="@drawable/app_icon_your_company"
-                android:icon="@drawable/app_icon_your_company"
+                android:banner="@drawable/app_icon_bernistaba"
+                android:icon="@drawable/app_icon_bernistaba"
                 android:label="@string/title_activity_main"
-                android:logo="@drawable/app_icon_your_company"
+                android:logo="@drawable/app_icon_bernistaba"
                 android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -31,7 +32,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".PlaybackActivity"/>
-        <activity android:name=".BrowseErrorActivity"/>
     </application>
 
 </manifest>

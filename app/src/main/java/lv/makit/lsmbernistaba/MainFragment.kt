@@ -12,9 +12,11 @@
  * the License.
  */
 
-package lv.ugis.lsmbernistaba
+package lv.makit.lsmbernistaba
 
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
@@ -32,6 +34,8 @@ import com.bumptech.glide.request.target.SimpleTarget
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
 import java.util.*
+
+
 
 
 /**
@@ -98,6 +102,7 @@ class MainFragment : BrowseSupportFragment() {
 
     private fun setupUIElements() {
         title = getString(R.string.browse_title)
+        showTitle(TitleViewAdapter.BRANDING_VIEW_VISIBLE)
         // over title
         headersState = BrowseSupportFragment.HEADERS_ENABLED
         isHeadersTransitionOnBackEnabled = true
@@ -109,11 +114,6 @@ class MainFragment : BrowseSupportFragment() {
     }
 
     private fun setupEventListeners() {
-        setOnSearchClickedListener {
-            Toast.makeText(activity, "Implement your own in-app search", Toast.LENGTH_LONG)
-                .show()
-        }
-
         onItemViewClickedListener = ItemViewClickedListener()
         onItemViewSelectedListener = ItemViewSelectedListener()
     }
@@ -159,6 +159,7 @@ class MainFragment : BrowseSupportFragment() {
                         resource: GlideDrawable,
                         glideAnimation: GlideAnimation<in GlideDrawable>
                     ) {
+                        resource.setColorFilter(Color.LTGRAY, PorterDuff.Mode.MULTIPLY)
                         mBackgroundManager.drawable = resource
                     }
                 })

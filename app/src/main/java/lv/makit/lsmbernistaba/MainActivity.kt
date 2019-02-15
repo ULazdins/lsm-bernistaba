@@ -12,25 +12,15 @@
  * the License.
  */
 
-package lv.ugis.lsmbernistaba
+package lv.makit.lsmbernistaba
 
 import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
 
-/** Loads [PlaybackVideoFragment]. */
-class PlaybackActivity : FragmentActivity() {
+
+class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(android.R.id.content, PlaybackAudioFragment())
-//                .replace(android.R.id.content, PlaybackVideoFragment())
-                .commit()
-        }
-    }
-
-    companion object {
-        const val SHARED_ELEMENT_NAME = "hero"
-        const val MOVIE = "Movie"
+        setContentView(R.layout.activity_main)
     }
 }

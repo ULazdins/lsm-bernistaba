@@ -1,10 +1,5 @@
 <resources>
     <string name="app_name">LSM Bērnistaba</string>
-    <string name="title_activity_main">Leanback MainActivity Title</string>
+    <string name="title_activity_main">LSM Bērnistaba</string>
     <string name="browse_title"><![CDATA[LSM Bērnistaba]]></string>
-    <string name="related_movies">Related Videos</string>
-
-    <!-- Error messages -->
-    <string name="error_fragment_message">An error occurred</string>
-    <string name="dismiss_error">Dismiss</string>
 </resources>

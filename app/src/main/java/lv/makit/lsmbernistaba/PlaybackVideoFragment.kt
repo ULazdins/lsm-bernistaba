@@ -12,7 +12,7 @@
  * the License.
  */
 
-package lv.ugis.lsmbernistaba
+package lv.makit.lsmbernistaba
 
 import android.media.MediaPlayer
 import android.net.Uri

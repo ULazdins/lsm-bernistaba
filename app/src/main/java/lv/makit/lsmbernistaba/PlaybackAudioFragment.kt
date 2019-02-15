@@ -1,4 +1,4 @@
-package lv.ugis.lsmbernistaba
+package lv.makit.lsmbernistaba
 
 import android.graphics.drawable.Drawable
 import android.media.MediaPlayer
