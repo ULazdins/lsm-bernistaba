@@ -12,6 +12,7 @@
             android:required="true"/>
 
     <application
+            android:name=".MainApplication"
             android:allowBackup="false"
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
@@ -32,6 +33,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".PlaybackActivity"/>
+        <meta-data
+                android:name="io.fabric.ApiKey"
+                android:value="38edc1ef67aa6beceab4ba00e116b2d6be8bf02e"
+        />
     </application>
 
 </manifest>

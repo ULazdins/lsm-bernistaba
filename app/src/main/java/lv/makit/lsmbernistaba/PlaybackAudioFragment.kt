@@ -1,5 +1,7 @@
 package lv.makit.lsmbernistaba
 
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.media.MediaPlayer
 import android.net.Uri
@@ -12,10 +14,7 @@ import androidx.leanback.app.PlaybackSupportFragmentGlueHost
 import androidx.leanback.media.MediaPlayerAdapter
 import androidx.leanback.media.PlaybackGlue
 import androidx.leanback.media.PlaybackTransportControlGlue
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.drawable.GlideDrawable
-import com.bumptech.glide.request.animation.GlideAnimation
-import com.bumptech.glide.request.target.SimpleTarget
+import com.squareup.picasso.Picasso
 import org.jsoup.Jsoup
 import org.jsoup.select.Elements
 import java.io.IOException
@@ -51,22 +50,21 @@ class PlaybackAudioFragment: PlaybackSupportFragment() {
         playerGlue.subtitle = "Latvijas Radio Teātris"
         playerGlue.title = item.title
 
-        val width = mMetrics.widthPixels
-        val height = mMetrics.heightPixels
-        Glide.with(activity)
+        Picasso.with(activity)
             .load(item.imageUrl)
             .centerCrop()
-            .error(mDefaultBackground)
-            .into<SimpleTarget<GlideDrawable>>(
-                object : SimpleTarget<GlideDrawable>(width, height) {
-                    override fun onResourceReady(
-                        resource: GlideDrawable,
-                        glideAnimation: GlideAnimation<in GlideDrawable>
-                    ) {
-                        mBackgroundManager.drawable = resource
-                    }
-                })
+            .into(object: com.squareup.picasso.Target {
+                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+                }
 
+                override fun onBitmapFailed(errorDrawable: Drawable?) {
+                }
+
+                override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                    val resource = BitmapDrawable(resources, bitmap)
+                    mBackgroundManager.drawable = resource
+                }
+            })
 
         object : Thread() {
             override fun run() {

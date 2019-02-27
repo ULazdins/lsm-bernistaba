@@ -19,7 +19,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.leanback.widget.ImageCardView
 import androidx.leanback.widget.Presenter
-import com.bumptech.glide.Glide
+import com.squareup.picasso.Picasso
 import kotlin.properties.Delegates
 
 class CardPresenter : Presenter() {
@@ -51,10 +51,10 @@ class CardPresenter : Presenter() {
 
         cardView.titleText = movie.title
         cardView.setMainImageDimensions(CARD_WIDTH, CARD_HEIGHT)
-        Glide.with(viewHolder.view.context)
+
+        Picasso.with(viewHolder.view.context)
             .load(movie.imageUrl)
             .centerCrop()
-            .error(mDefaultCardImage)
             .into(cardView.mainImageView)
     }
 

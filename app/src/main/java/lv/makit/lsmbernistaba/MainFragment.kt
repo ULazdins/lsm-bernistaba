@@ -15,8 +15,10 @@
 package lv.makit.lsmbernistaba
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.PorterDuff
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
@@ -27,13 +29,13 @@ import androidx.core.content.ContextCompat
 import androidx.leanback.app.BackgroundManager
 import androidx.leanback.app.BrowseSupportFragment
 import androidx.leanback.widget.*
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.drawable.GlideDrawable
-import com.bumptech.glide.request.animation.GlideAnimation
-import com.bumptech.glide.request.target.SimpleTarget
+import com.crashlytics.android.Crashlytics
+import com.squareup.picasso.Picasso
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Consumer
 import java.util.*
+
+
 
 
 
@@ -76,10 +78,12 @@ class MainFragment : BrowseSupportFragment() {
                         .subscribe(Consumer {
                             listRowAdapter.addAll(0, it)
                         }, Consumer {
+                            Crashlytics.logException(it)
                             Toast.makeText(context, it.localizedMessage, Toast.LENGTH_LONG).show()
                         })
                 }
             }, Consumer {
+                Crashlytics.logException(it)
                 Toast.makeText(context, it.localizedMessage, Toast.LENGTH_LONG).show()
             })
 
@@ -147,22 +151,23 @@ class MainFragment : BrowseSupportFragment() {
     }
 
     private fun updateBackground(uri: String?) {
-        val width = mMetrics.widthPixels
-        val height = mMetrics.heightPixels
-        Glide.with(activity)
+        Picasso.with(activity)
             .load(uri)
             .centerCrop()
-            .error(mDefaultBackground)
-            .into<SimpleTarget<GlideDrawable>>(
-                object : SimpleTarget<GlideDrawable>(width, height) {
-                    override fun onResourceReady(
-                        resource: GlideDrawable,
-                        glideAnimation: GlideAnimation<in GlideDrawable>
-                    ) {
-                        resource.setColorFilter(Color.LTGRAY, PorterDuff.Mode.MULTIPLY)
-                        mBackgroundManager.drawable = resource
-                    }
-                })
+            .into(object: com.squareup.picasso.Target {
+                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+                }
+
+                override fun onBitmapFailed(errorDrawable: Drawable?) {
+                }
+
+                override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                    val resource = BitmapDrawable(resources, bitmap)
+                    resource.setColorFilter(Color.LTGRAY, PorterDuff.Mode.MULTIPLY)
+                    mBackgroundManager.drawable = resource
+                }
+            })
+
         mBackgroundTimer?.cancel()
     }
 
