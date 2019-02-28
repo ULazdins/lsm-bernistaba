@@ -52,9 +52,9 @@ class CardPresenter : Presenter() {
         cardView.titleText = movie.title
         cardView.setMainImageDimensions(CARD_WIDTH, CARD_HEIGHT)
 
+
         Picasso.with(viewHolder.view.context)
             .load(movie.imageUrl)
-            .centerCrop()
             .into(cardView.mainImageView)
     }
 

@@ -23,7 +23,6 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
 import android.util.DisplayMetrics
-import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.leanback.app.BackgroundManager
@@ -36,13 +35,6 @@ import io.reactivex.functions.Consumer
 import java.util.*
 
 
-
-
-
-
-/**
- * Loads a grid of cards with movies to browse.
- */
 class MainFragment : BrowseSupportFragment() {
     private val mHandler = Handler()
     private lateinit var mBackgroundManager: BackgroundManager
@@ -51,12 +43,11 @@ class MainFragment : BrowseSupportFragment() {
     private var mBackgroundTimer: Timer? = null
     private var mBackgroundUri: String? = null
     private var apiClient = ApiClient()
-    val rowsAdapter = ArrayObjectAdapter(ListRowPresenter())
+    private val rowsAdapter = ArrayObjectAdapter(ListRowPresenter())
 
     val cardPresenter = CardPresenter()
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
-        Log.i(TAG, "onCreate")
         super.onActivityCreated(savedInstanceState)
 
         prepareBackgroundManager()
@@ -67,7 +58,7 @@ class MainFragment : BrowseSupportFragment() {
 
         apiClient.loadAudioCategories()
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(Consumer {
+            .subscribe({
                 it.forEach {
                     val listRowAdapter = ArrayObjectAdapter(cardPresenter)
                     val header = HeaderItem(0, it.title)
@@ -82,7 +73,7 @@ class MainFragment : BrowseSupportFragment() {
                             Toast.makeText(context, it.localizedMessage, Toast.LENGTH_LONG).show()
                         })
                 }
-            }, Consumer {
+            }, {
                 Crashlytics.logException(it)
                 Toast.makeText(context, it.localizedMessage, Toast.LENGTH_LONG).show()
             })
@@ -92,7 +83,6 @@ class MainFragment : BrowseSupportFragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "onDestroy: " + mBackgroundTimer?.toString())
         mBackgroundTimer?.cancel()
     }
 
@@ -130,7 +120,6 @@ class MainFragment : BrowseSupportFragment() {
             row: Row
         ) {
             if (item is AudioItem) {
-                Log.d(TAG, "Item: $item")
                 val intent = Intent(activity, PlaybackActivity::class.java)
                 intent.putExtra(PlaybackActivity.MOVIE, item)
                 activity!!.startActivity(intent)
@@ -153,7 +142,6 @@ class MainFragment : BrowseSupportFragment() {
     private fun updateBackground(uri: String?) {
         Picasso.with(activity)
             .load(uri)
-            .centerCrop()
             .into(object: com.squareup.picasso.Target {
                 override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
                 }
@@ -184,8 +172,6 @@ class MainFragment : BrowseSupportFragment() {
     }
 
     companion object {
-        private const val TAG = "MainFragment"
-
         private const val BACKGROUND_UPDATE_DELAY = 300
     }
 }

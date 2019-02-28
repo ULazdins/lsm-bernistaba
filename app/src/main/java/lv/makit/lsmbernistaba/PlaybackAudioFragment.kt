@@ -40,7 +40,7 @@ class PlaybackAudioFragment: PlaybackSupportFragment() {
         playerGlue.host = PlaybackSupportFragmentGlueHost(this)
         playerGlue.addPlayerCallback(object : PlaybackGlue.PlayerCallback() {
             override fun onPreparedStateChanged(glue: PlaybackGlue) {
-                if (glue.isPrepared()) {
+                if (glue.isPrepared) {
 //                    playerGlue.setSeekProvider(MySeekProvider())
                     playerGlue.play()
                 }
@@ -52,7 +52,6 @@ class PlaybackAudioFragment: PlaybackSupportFragment() {
 
         Picasso.with(activity)
             .load(item.imageUrl)
-            .centerCrop()
             .into(object: com.squareup.picasso.Target {
                 override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
                 }
@@ -82,7 +81,7 @@ class PlaybackAudioFragment: PlaybackSupportFragment() {
 
                     val url = Uri.parse(urlStr)
 
-                    playerGlue.getPlayerAdapter().setDataSource(url)
+                    playerGlue.playerAdapter.setDataSource(url)
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
